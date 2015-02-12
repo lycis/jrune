@@ -3,6 +3,9 @@
 .settings/*
 .project
 
+# libs are not part of the repository
+lib/*
+
 
 # Windows image file caches
 Thumbs.db
