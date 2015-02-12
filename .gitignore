@@ -6,6 +6,9 @@
 # libs are not part of the repository
 lib/*
 
+# test folder is irrelevant
+test/*
+
 
 # Windows image file caches
 Thumbs.db
