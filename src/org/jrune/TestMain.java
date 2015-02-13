@@ -3,6 +3,8 @@ package org.jrune;
 import java.io.File;
 
 import org.jrune.core.Engine;
+import org.jrune.entity.Entity;
+import org.jrune.entity.UnknownEntityException;
 
 public class TestMain {
 	
@@ -22,5 +24,11 @@ public class TestMain {
 		
 		Engine engine = new Engine("."+File.separator+"test");
 		engine.start();
+		try {
+			Entity goblin = engine.cloneEntity("npc.goblins.goblin");
+		} catch (UnknownEntityException e) {
+			System.out.println("Entity not cloned: ");
+			e.printStackTrace();
+		}
 	}
 }

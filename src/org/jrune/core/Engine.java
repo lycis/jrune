@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.jrune.entity.Entity;
 import org.jrune.entity.EntityLoader;
 import org.jrune.entity.InvalidEntityException;
+import org.jrune.entity.UnknownEntityException;
 
 /**
  * The engine is the master object. It manages all actions that are related
@@ -33,7 +35,9 @@ public class Engine {
 	// private members
 	private String basePath = "";
 	private BitSet options = new BitSet(32);
-	private Map<String, Entity> _blueprintRegister = new HashMap<>(); 
+	
+	private Map<String, Entity> _blueprintRegister = new HashMap<>();
+	private Map<String, Entity> _activeEntities = new HashMap<>();
 	
 	
 	public Engine() {
@@ -100,7 +104,7 @@ public class Engine {
 	 * already exists it will be overwritten.
 	 * @param e
 	 */
-	public void registerEntityBlueprint(Entity e) {
+	synchronized public void registerEntityBlueprint(Entity e) {
 		if(e == null) {
 			Logger.getLogger(LOGGER_SUBSYSTEM).severe("Invalid entity: null entity");
 			throw new InvalidEntityException("null entity");
@@ -115,5 +119,41 @@ public class Engine {
 				e.getProperty(Entity.PROP_ENTITY));
 		
 		_blueprintRegister.put(e.getProperty(Entity.PROP_ENTITY), e);
+	}
+	
+	/**
+	 * Clone an entity from a given blueprint. If the blueprint is not
+	 * known it will be loaded if lazy loading is enabled.
+	 * 
+	 * @param entityName
+	 * @return cloned entity
+	 */
+	synchronized public Entity cloneEntity(String entityName) throws UnknownEntityException {
+		Logger.getLogger(LOGGER_SUBSYSTEM).fine("Cloning entity = "+entityName);
+		if(!_blueprintRegister.containsKey(entityName)) {
+			if(options.get(OPTION_LAZY_LOAD)) {
+				Logger.getLogger(LOGGER_SUBSYSTEM).fine("Lazy loading entity = "+entityName);
+				// lazy load entity
+				EntityLoader loader = new EntityLoader(this);
+				try{
+					loader.load(entityName);
+				} catch(RuneRuntimeException ex) {
+					Logger.getLogger(LOGGER_SUBSYSTEM).severe("Lazy loading failed: "+ex.getMessage());
+					throw new UnknownEntityException(entityName, ex);
+				}
+			} else {
+				Logger.getLogger(LOGGER_SUBSYSTEM).severe("UnknownEntity: "+entityName);
+				throw new UnknownEntityException(entityName);
+			}
+		}
+		
+		Entity e = new Entity(_blueprintRegister.get(entityName));
+		UUID entityId = UUID.randomUUID();
+		while(_activeEntities.containsKey(entityId.toString())) {
+			entityId = UUID.randomUUID();
+		}
+		e.setProperty(Entity.PROP_UID, entityId.toString());
+		_activeEntities.put(e.getProperty(Entity.PROP_UID), e);
+		return e;
 	}
 }
