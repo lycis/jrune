@@ -1,6 +1,5 @@
 package org.jrune.core;
 
-import java.io.File;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -30,7 +29,7 @@ public class Engine {
 	 */
 	public static int OPTION_LAZY_LOAD = 1;
 	
-	public static String LOGGER_SUBSYSTEM = "Engine";
+	public static String LOGGER_SUBSYSTEM = "JRune";
 	
 	// private members
 	private String basePath = "";
