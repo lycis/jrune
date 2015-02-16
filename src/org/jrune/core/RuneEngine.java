@@ -6,8 +6,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 
-import org.jrune.entity.Entity;
-import org.jrune.entity.EntityLoader;
+import org.jrune.entity.RuneEntity;
+import org.jrune.entity.RuneEntityLoader;
 import org.jrune.entity.InvalidEntityException;
 import org.jrune.entity.UnknownEntityException;
 
@@ -19,7 +19,7 @@ import org.jrune.entity.UnknownEntityException;
  * @author lycis
  *
  */
-public class Engine {
+public class RuneEngine {
 	
 	// constants
 	
@@ -35,15 +35,15 @@ public class Engine {
 	private String basePath = "";
 	private BitSet options = new BitSet(32);
 	
-	private Map<String, Entity> _blueprintRegister = new HashMap<>();
-	private Map<String, Entity> _activeEntities = new HashMap<>();
+	private Map<String, RuneEntity> _blueprintRegister = new HashMap<>();
+	private Map<String, RuneEntity> _activeEntities = new HashMap<>();
 	
 	
-	public Engine() {
+	public RuneEngine() {
 		this("."); // use workdir as base path
 	}
 	
-	public Engine(String basePath) {
+	public RuneEngine(String basePath) {
 		this.basePath = basePath;
 	}
 	
@@ -55,7 +55,7 @@ public class Engine {
 		
 		if(!isOptionEnabled(OPTION_LAZY_LOAD)) {
 			Logger.getLogger(LOGGER_SUBSYSTEM).info("Lazy loading disabled. Loading ALL entities.");
-			EntityLoader el = new EntityLoader(this);
+			RuneEntityLoader el = new RuneEntityLoader(this);
 			el.loadAll("");
 			Logger.getLogger(LOGGER_SUBSYSTEM).info("Loaded blueprints ("+_blueprintRegister.size()+")");
 		}
@@ -103,21 +103,21 @@ public class Engine {
 	 * already exists it will be overwritten.
 	 * @param e
 	 */
-	synchronized public void registerEntityBlueprint(Entity e) {
+	synchronized public void registerEntityBlueprint(RuneEntity e) {
 		if(e == null) {
 			Logger.getLogger(LOGGER_SUBSYSTEM).severe("Invalid entity: null entity");
 			throw new InvalidEntityException("null entity");
 		}
 		
-		if(e.getProperty(Entity.PROP_ENTITY).isEmpty()) {
+		if(e.getProperty(RuneEntity.PROP_ENTITY).isEmpty()) {
 			Logger.getLogger(LOGGER_SUBSYSTEM).severe("Invalid entity: missing entity name");
 			throw new InvalidEntityException("missing entity name");
 		}
 		
 		Logger.getLogger(LOGGER_SUBSYSTEM).info("entity blueprint registered = " +
-				e.getProperty(Entity.PROP_ENTITY));
+				e.getProperty(RuneEntity.PROP_ENTITY));
 		
-		_blueprintRegister.put(e.getProperty(Entity.PROP_ENTITY), e);
+		_blueprintRegister.put(e.getProperty(RuneEntity.PROP_ENTITY), e);
 	}
 	
 	/**
@@ -127,13 +127,13 @@ public class Engine {
 	 * @param entityName
 	 * @return cloned entity
 	 */
-	synchronized public Entity cloneEntity(String entityName) throws UnknownEntityException {
+	synchronized public RuneEntity cloneEntity(String entityName) throws UnknownEntityException {
 		Logger.getLogger(LOGGER_SUBSYSTEM).fine("Cloning entity = "+entityName);
 		if(!_blueprintRegister.containsKey(entityName)) {
 			if(options.get(OPTION_LAZY_LOAD)) {
 				Logger.getLogger(LOGGER_SUBSYSTEM).fine("Lazy loading entity = "+entityName);
 				// lazy load entity
-				EntityLoader loader = new EntityLoader(this);
+				RuneEntityLoader loader = new RuneEntityLoader(this);
 				try{
 					loader.load(entityName);
 				} catch(RuneRuntimeException ex) {
@@ -146,13 +146,13 @@ public class Engine {
 			}
 		}
 		
-		Entity e = new Entity(_blueprintRegister.get(entityName));
+		RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName));
 		UUID entityId = UUID.randomUUID();
 		while(_activeEntities.containsKey(entityId.toString())) {
 			entityId = UUID.randomUUID();
 		}
-		e.setProperty(Entity.PROP_UID, entityId.toString());
-		_activeEntities.put(e.getProperty(Entity.PROP_UID), e);
+		e.setProperty(RuneEntity.PROP_UID, entityId.toString());
+		_activeEntities.put(e.getProperty(RuneEntity.PROP_UID), e);
 		return e;
 	}
 }

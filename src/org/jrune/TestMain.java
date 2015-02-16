@@ -2,8 +2,8 @@ package org.jrune;
 
 import java.io.File;
 
-import org.jrune.core.Engine;
-import org.jrune.entity.Entity;
+import org.jrune.core.RuneEngine;
+import org.jrune.entity.RuneEntity;
 import org.jrune.entity.UnknownEntityException;
 
 public class TestMain {
@@ -22,10 +22,10 @@ public class TestMain {
 		}
 		*/
 		
-		Engine engine = new Engine("."+File.separator+"test");
+		RuneEngine engine = new RuneEngine("."+File.separator+"test");
 		engine.start();
 		try {
-			Entity goblin = engine.cloneEntity("npc.goblins.goblin");
+			RuneEntity goblin = engine.cloneEntity("npc.goblins.goblin");
 		} catch (UnknownEntityException e) {
 			System.out.println("Entity not cloned: ");
 			e.printStackTrace();
