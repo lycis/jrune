@@ -1,6 +1,9 @@
 package org.jrune.core;
 
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.jrune.entity.RuneEntity;
 
@@ -11,18 +14,38 @@ import org.jrune.entity.RuneEntity;
  * @author lycis
  *
  */
-class DefaultEngineState implements IRuneEngineState{
-
-	@Override
-	public Map<String, RuneEntity> getActiveEntities() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+class DefaultEngineState extends RuneEngineState {
+	private Map<String, RuneEntity> _activeEntities = new HashMap<>();
 
 	@Override
 	public RuneEntity getActiveEntity(String id) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!_activeEntities.containsKey(id)) {
+			return null;
+		}
+		
+		return _activeEntities.get(id);
+	}
+
+	@Override
+	public Collection<String> getActiveEntityIds() {
+		return _activeEntities.keySet();
+	}
+
+	@Override
+	public String addActiveEntity(RuneEntity entity) {
+		// generate UIOD
+		UUID entityId = UUID.randomUUID();
+		while(_activeEntities.containsKey(entityId.toString())) {
+			entityId = UUID.randomUUID();
+		}
+		
+		// set id for entity
+		entity.setProperty(RuneEntity.PROP_UID, entityId.toString());
+		
+		// add to list of clones
+		_activeEntities.put(entity.getProperty(RuneEntity.PROP_UID), entity);
+		
+		return entity.getProperty(RuneEntity.PROP_UID);
 	}
 
 }

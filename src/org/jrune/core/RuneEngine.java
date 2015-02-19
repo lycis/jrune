@@ -3,12 +3,11 @@ package org.jrune.core;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Logger;
 
+import org.jrune.entity.InvalidEntityException;
 import org.jrune.entity.RuneEntity;
 import org.jrune.entity.RuneEntityLoader;
-import org.jrune.entity.InvalidEntityException;
 import org.jrune.entity.UnknownEntityException;
 
 /**
@@ -36,7 +35,7 @@ public class RuneEngine {
 	private BitSet options = new BitSet(32);
 	
 	private Map<String, RuneEntity> _blueprintRegister = new HashMap<>();
-	private Map<String, RuneEntity> _activeEntities = new HashMap<>();
+	private RuneEngineState _gameState = null;
 	
 	
 	public RuneEngine() {
@@ -53,11 +52,20 @@ public class RuneEngine {
 	public void start() {
 		Logger.getLogger(LOGGER_SUBSYSTEM).info("Enginge is starting (options = " + options.toString()+ ")");
 		
+		// load entities (without OPTION_LAZY_LOAD
 		if(!isOptionEnabled(OPTION_LAZY_LOAD)) {
 			Logger.getLogger(LOGGER_SUBSYSTEM).info("Lazy loading disabled. Loading ALL entities.");
 			RuneEntityLoader el = new RuneEntityLoader(this);
 			el.loadAll("");
 			Logger.getLogger(LOGGER_SUBSYSTEM).info("Loaded blueprints ("+_blueprintRegister.size()+")");
+		}
+		
+		// instantiate game state if not already loaded
+		if(_gameState == null) {
+			Logger.getLogger(LOGGER_SUBSYSTEM).info("Instantiating new game state");
+			_gameState = new DefaultEngineState();
+		} else {
+			Logger.getLogger(LOGGER_SUBSYSTEM).info("Reusing previously loaded game state.");
 		}
 		
 		Logger.getLogger(LOGGER_SUBSYSTEM).info("ready for use");
@@ -147,12 +155,7 @@ public class RuneEngine {
 		}
 		
 		RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName));
-		UUID entityId = UUID.randomUUID();
-		while(_activeEntities.containsKey(entityId.toString())) {
-			entityId = UUID.randomUUID();
-		}
-		e.setProperty(RuneEntity.PROP_UID, entityId.toString());
-		_activeEntities.put(e.getProperty(RuneEntity.PROP_UID), e);
+		_gameState.addActiveEntity(e);
 		return e;
 	}
 }

@@ -26,6 +26,7 @@ public class TestMain {
 		engine.start();
 		try {
 			RuneEntity goblin = engine.cloneEntity("npc.goblins.goblin");
+			System.out.println("entity "+goblin.getProperty(RuneEntity.PROP_ENTITY)+" loaded.");
 		} catch (UnknownEntityException e) {
 			System.out.println("Entity not cloned: ");
 			e.printStackTrace();

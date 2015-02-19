@@ -2,6 +2,7 @@ package org.jrune.entity;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * This represents any entity within the game with.
@@ -112,5 +113,13 @@ public class RuneEntity {
 		// if this entity is not directly based on the requested one we do a recursive search
 		// TODO once engine reference is available
 		return false;
+	}
+	
+	/**
+	 * Return all available properties.
+	 * @return
+	 */
+	public Set<String> getProperties() {
+		return properties.keySet();
 	}
 }
