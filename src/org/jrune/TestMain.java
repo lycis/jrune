@@ -1,6 +1,8 @@
 package org.jrune;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.jrune.core.RuneEngine;
 import org.jrune.entity.RuneEntity;
@@ -8,20 +10,7 @@ import org.jrune.entity.UnknownEntityException;
 
 public class TestMain {
 	
-	public static void main(String... args) {
-	/*	Logger log = Logger.getLogger(Engine.LOGGER_SUBSYSTEM);
-		
-		if(log.getHandlers().length > 0) {
-			for(Handler h: log.getHandlers()) {
-				h.setLevel(Level.FINEST);
-			}
-		} else {
-			ConsoleHandler handler = new ConsoleHandler();
-			handler.setLevel(Level.FINEST);
-			log.addHandler(handler);
-		}
-		*/
-		
+	public static void main(String... args) {	
 		RuneEngine engine = new RuneEngine("."+File.separator+"test");
 		engine.start();
 		try {
@@ -30,6 +19,21 @@ public class TestMain {
 		} catch (UnknownEntityException e) {
 			System.out.println("Entity not cloned: ");
 			e.printStackTrace();
+		}
+		
+		// jsonify
+		String json = engine.getState().toJSON();
+		
+		// load new game state from json
+		engine.getState().fromJSON(json);
+		
+		// compare
+		if(json.equals(engine.getState().toJSON())) {
+		    System.out.println("json state matches");
+		} else {
+		    System.out.println("json state does not match");
+		    System.out.println("orig: "+json);
+		    System.out.println("now: "+engine.getState().toJSON());
 		}
 	}
 }

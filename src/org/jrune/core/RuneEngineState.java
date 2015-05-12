@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.jrune.entity.RuneEntity;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
@@ -60,6 +62,15 @@ public abstract class RuneEngineState {
 	public abstract String addActiveEntity(RuneEntity entity);
 	
 	/**
+	 * Removes an entity from the register of active entities. This will invalidate all 
+	 * references to this entity and remove it from the list of managed active entity
+	 * clones.
+	 * 
+	 * @param entity
+	 */
+	public abstract void removeActiveEntity(RuneEntity entity);
+	
+	/**
 	 * Translates the current state into a JSON object. Implementations should not
 	 * overwrite this.
 	 * @return
@@ -84,4 +95,47 @@ public abstract class RuneEngineState {
 		
 		return json.toString();
 	}
+	
+	/**
+	 * Configures this game state based on the given JSON. All current data will be discarded and
+	 * the data of the JSON will be set as the current game state. Implentations should not overwrite
+	 * this!
+	 * 
+	 * @param json JSON representation of the game state
+	 */
+	public void fromJSON(String json) throws JSONException {
+	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).info("loading state from json");
+	    // clear current state
+	    discard();
+	    
+	    JSONObject jState = new JSONObject(json);
+	    
+	    if(jState.has(PERSIST_KEY_ENTITIES)) {
+		// load entities
+		JSONArray aEntities = jState.getJSONArray(PERSIST_KEY_ENTITIES);
+		for(int i=0; i<aEntities.length(); ++i) {
+		    JSONObject jEntity = aEntities.getJSONObject(i);
+		    // generate entity from json
+		    RuneEntity e = new RuneEntity();
+		    for(String prop: jEntity.keySet()) {
+			e.setProperty(prop, jEntity.getString(prop));
+			Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finest(prop+" = "+jEntity.getString(prop));
+		    }
+		    
+		    // add entity to list of managed active entities
+		    addActiveEntity(e);
+		    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).fine("entity "+e.getProperty(RuneEntity.PROP_UID)+" loaded.");
+		}
+	    }
+	    
+	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).info("state loaded (entities = "+getActiveEntityIds().size()+")");
+	}
+	
+	/**
+	 * Cleans the complete state and deletes all lists and registers (e.g. managed
+	 * active entities, loaded maps, ...). This method is intended to be used whenever
+	 * the complete game state should be discarded and thereby be set to a complete
+	 * empty state. Just like freshly hatched.
+	 */
+	public abstract void discard();
 }

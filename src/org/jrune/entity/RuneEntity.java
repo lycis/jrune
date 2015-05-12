@@ -122,4 +122,5 @@ public class RuneEntity {
 	public Set<String> getProperties() {
 		return properties.keySet();
 	}
+	
 }

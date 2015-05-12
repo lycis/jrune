@@ -28,7 +28,7 @@ public class RuneEngine {
 	 */
 	public static int OPTION_LAZY_LOAD = 1;
 	
-	public static String LOGGER_SUBSYSTEM = "JRune";
+	public static String LOGGER_SUBSYSTEM = "org.jrune";
 	
 	// private members
 	private String basePath = "";
@@ -157,5 +157,13 @@ public class RuneEngine {
 		RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName));
 		_gameState.addActiveEntity(e);
 		return e;
+	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	synchronized public RuneEngineState getState() {
+		return _gameState;
 	}
 }

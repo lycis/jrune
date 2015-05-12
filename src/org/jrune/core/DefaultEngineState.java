@@ -15,37 +15,55 @@ import org.jrune.entity.RuneEntity;
  *
  */
 class DefaultEngineState extends RuneEngineState {
-	private Map<String, RuneEntity> _activeEntities = new HashMap<>();
+    private Map<String, RuneEntity> _activeEntities = new HashMap<>();
 
-	@Override
-	public RuneEntity getActiveEntity(String id) {
-		if(!_activeEntities.containsKey(id)) {
-			return null;
-		}
-		
-		return _activeEntities.get(id);
+    @Override
+    public RuneEntity getActiveEntity(String id) {
+	if (!_activeEntities.containsKey(id)) {
+	    return null;
 	}
 
-	@Override
-	public Collection<String> getActiveEntityIds() {
-		return _activeEntities.keySet();
+	return _activeEntities.get(id);
+    }
+
+    @Override
+    public Collection<String> getActiveEntityIds() {
+	return _activeEntities.keySet();
+    }
+
+    @Override
+    public String addActiveEntity(RuneEntity entity) {
+	// generate UID if entity does not already have one
+	if (!entity.hasProperty(RuneEntity.PROP_UID)) {
+	    UUID entityId = UUID.randomUUID();
+	    while (_activeEntities.containsKey(entityId.toString())) {
+		entityId = UUID.randomUUID();
+	    }
+
+	    // set id for entity
+	    entity.setProperty(RuneEntity.PROP_UID, entityId.toString());
 	}
 
-	@Override
-	public String addActiveEntity(RuneEntity entity) {
-		// generate UIOD
-		UUID entityId = UUID.randomUUID();
-		while(_activeEntities.containsKey(entityId.toString())) {
-			entityId = UUID.randomUUID();
-		}
-		
-		// set id for entity
-		entity.setProperty(RuneEntity.PROP_UID, entityId.toString());
-		
-		// add to list of clones
-		_activeEntities.put(entity.getProperty(RuneEntity.PROP_UID), entity);
-		
-		return entity.getProperty(RuneEntity.PROP_UID);
+	// add to list of clones
+	_activeEntities.put(entity.getProperty(RuneEntity.PROP_UID), entity);
+
+	return entity.getProperty(RuneEntity.PROP_UID);
+    }
+
+    @Override
+    public void removeActiveEntity(RuneEntity entity) {
+	if (!_activeEntities.containsKey(entity.getProperty(RuneEntity.PROP_UID))) {
+	    return; // entity is not managed by this state
 	}
+
+	_activeEntities.remove(entity.getProperty(RuneEntity.PROP_UID));
+    }
+
+    @Override
+    public void discard() {
+	// remove all entities from this state
+	_activeEntities.clear();
+
+    }
 
 }
