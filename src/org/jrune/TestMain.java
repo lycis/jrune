@@ -1,22 +1,27 @@
 package org.jrune;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.jrune.core.RuneEngine;
+import org.jrune.core.RuneException;
 import org.jrune.entity.RuneEntity;
 import org.jrune.entity.UnknownEntityException;
+import org.jrune.script.RuneScriptException;
 
 public class TestMain {
 	
 	public static void main(String... args) {	
 		RuneEngine engine = new RuneEngine("."+File.separator+"test");
-		engine.start();
+		try {
+		    engine.start();
+		} catch (RuneException e1) {
+		    // TODO Auto-generated catch block
+		    e1.printStackTrace();
+		}
 		try {
 			RuneEntity goblin = engine.cloneEntity("npc.goblins.goblin");
 			System.out.println("entity "+goblin.getProperty(RuneEntity.PROP_ENTITY)+" loaded.");
-		} catch (UnknownEntityException e) {
+		} catch (UnknownEntityException | RuneScriptException e) {
 			System.out.println("Entity not cloned: ");
 			e.printStackTrace();
 		}

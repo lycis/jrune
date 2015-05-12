@@ -4,6 +4,14 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.script.Bindings;
+import javax.script.CompiledScript;
+import javax.script.ScriptException;
+import javax.script.SimpleBindings;
+
+import org.jrune.script.RuneScriptException;
+import org.luaj.vm2.LuaFunction;
+
 /**
  * This represents any entity within the game with.
  * 
@@ -39,7 +47,8 @@ public class RuneEntity {
 	public static String PROP_SCRIPT   = "$script";
 	
 	// internal variables
-	private Map<String, String> properties;
+	private Map<String, String> properties; // properties of entity
+	private CompiledScript script;
 	
 	// constructors
 	public RuneEntity() {
@@ -123,4 +132,60 @@ public class RuneEntity {
 		return properties.keySet();
 	}
 	
+	/**
+	 * Provides the caller with the compiled script of the entity.
+	 * @return <code>null</code> if no script is set
+	 */
+	public CompiledScript getScript() {
+	    return script;
+	}
+	
+	/**
+	 * Sets the script that controls this entity. Compilation of the script has to be
+	 * done beforehand.
+	 * @param script
+	 */
+	public void setScript(CompiledScript script) {
+	    this.script = script;
+	}
+	
+	@Override
+	public String toString() {
+	    return getProperty(PROP_ENTITY)+"["+(hasProperty(PROP_UID)?getProperty(PROP_UID):"!")+"]";
+	}
+	
+	/**
+	 * Directly call a script action of the entity. When no script is loaded or the action
+	 * is not defined the call will silently be ignored.
+	 * @param action
+	 */
+	// TODO this should be a varargs function for passing arguments to the action
+	public void call(String action) throws RuneScriptException {
+	    // TODO throw runtime exceptions when engine has option "error on missing script/action"
+	    if(script == null) {
+		return;
+	    }
+	    
+	    // TODO do the call in a script context (that has links to engine, etc.) and provides
+	    //      API functions
+	    Bindings sb = new SimpleBindings();
+	    try {
+		script.eval(sb);
+	    } catch (ScriptException e) {
+		throw new RuneScriptException("error in action call '"+action+"'", e);
+	    }
+	    Object potentialFunc = sb.get(action);
+	    
+	    if(potentialFunc == null) {
+		// function does not exist
+		return;
+	    }
+	    
+	    if(!(potentialFunc instanceof LuaFunction)) {
+		// no function
+		return;
+	    }
+	    
+	    ((LuaFunction) potentialFunc).call();
+	}
 }
