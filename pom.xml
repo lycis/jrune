@@ -30,4 +30,13 @@
   		<version>20141113</version>
   	</dependency>
   </dependencies>
+  <scm>
+  	<url>https://github.com/lycis/jrune.git</url>
+  	<connection>git</connection>
+  	<developerConnection>Daniel Eder (daniel@deder.at)</developerConnection>
+  </scm>
+  <issueManagement>
+  	<system>github</system>
+  	<url>https://github.com/lycis/jrune/issues</url>
+  </issueManagement>
 </project>
