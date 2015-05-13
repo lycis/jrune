@@ -161,7 +161,6 @@ public class RuneEntity {
 	 * is not defined the call will silently be ignored.
 	 * @param action
 	 */
-	// TODO this should be a varargs function for passing arguments to the action
 	public void call(String action) throws RuneScriptException {
 	    if(scriptContext == null) {
 		if(engine.isOptionEnabled(RuneEngine.OPTION_STRICT_FUNCALL)) {

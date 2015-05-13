@@ -7,7 +7,9 @@ import org.jrune.entity.RuneEntity;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.Varargs;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
@@ -58,7 +60,7 @@ public class RuneScriptContext {
      * @param function name of the function
      * @throws RuneScriptException
      */
-    public void executeFunction(String function) throws RuneScriptException {
+    public LuaValue executeFunction(String function, Object... args) throws RuneScriptException {
 	// TODO actions will be registered on the entity in YML and map to functions
 	LuaValue func = luaGlobals.get(function);
 	if (func == null || func == LuaValue.NIL) {
@@ -67,13 +69,34 @@ public class RuneScriptContext {
 		// throw exception when strict function calls are enabled
 		throw new RuneInvalidFunctionException(function);
 	    }
-	    return;
+	    return LuaValue.NIL;
 	}
 
 	if (!(func instanceof LuaFunction)) {
 	    throw new RuneScriptException(function + " is not a function");
 	}
-
-	func.call();
+	
+	if(args.length < 1) {
+	    return func.call();
+	} else {
+	    
+	    // translate arguments into function parameters
+	    LuaValue[] luaArgs = new LuaValue[args.length];
+	    for(int i=0; i< args.length; ++i) {
+		luaArgs[i] = CoerceJavaToLua.coerce(args[i]);
+	    }
+	    
+	    // execute with parameters
+	    Varargs v = func.invoke(LuaValue.varargsOf(luaArgs));
+	    
+	    // return according value
+	    if(v.narg() <= 0) {
+		return LuaValue.NIL;
+	    } else if(v.narg() == 1) {
+		return v.arg1();
+	    } else {
+		return new LuaTable(v);
+	    }
+	}
     }
 }

@@ -7,6 +7,7 @@ import org.jrune.core.RuneException;
 import org.jrune.entity.RuneEntity;
 import org.jrune.entity.UnknownEntityException;
 import org.jrune.script.RuneScriptException;
+import org.luaj.vm2.LuaValue;
 
 public class TestMain {
 	
@@ -22,6 +23,8 @@ public class TestMain {
 			RuneEntity goblin = engine.cloneEntity("npc.goblins.goblin");
 			System.out.println("entity "+goblin.getProperty(RuneEntity.PROP_ENTITY)+" loaded.");
 			goblin.call("foo");
+			LuaValue v = goblin.getScriptContext().executeFunction("foo");
+			System.out.println("foo = "+v.tojstring());
 		} catch (UnknownEntityException | RuneScriptException e) {
 			System.out.println("Entity not cloned: ");
 			e.printStackTrace();
