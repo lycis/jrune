@@ -172,10 +172,25 @@ public class RuneEngine {
     }
 
     /**
-     * 
+     *  Provides the current state of the engine.
      * @return
      */
     synchronized public RuneEngineState getState() {
 	return _gameState;
+    }
+    
+    /**
+     * Returns the blueprint of an entity with the given name. Modifications to the returned entity
+     * will result in changes of the actual blueprint.
+     * 
+     * @param name name of the entity blueprint
+     * @return <code>null</code> if no such blueprint is registered
+     */
+    public RuneEntity getBlueprint(String name){
+	if(!_blueprintRegister.containsKey(name)) {
+	    return null;
+	}
+	
+	return _blueprintRegister.get(name);
     }
 }

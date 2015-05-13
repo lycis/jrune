@@ -120,9 +120,8 @@ public class RuneEntity {
 			return true; // directly based on entity
 		}
 		
-		// if this entity is not directly based on the requested one we do a recursive search
-		// TODO once engine reference is available
-		return false;
+		// if this entity is not directly based on the requested one, do a recursive search		
+		return engine.getBlueprint(getProperty(PROP_BASE)).isBasedOn(entityName);
 	}
 	
 	/**

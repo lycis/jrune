@@ -15,7 +15,7 @@ public class TestMain {
 		try {
 		    engine.start();
 		} catch (RuneException e1) {
-		    // TODO Auto-generated catch block
+		    
 		    e1.printStackTrace();
 		}
 		try {
