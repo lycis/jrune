@@ -58,6 +58,8 @@ public class RuneScriptContext {
      * Invokes a Lua function that is defined in the assigned entity.
      * 
      * @param function name of the function
+     * @return a LuaValue representing the result of the call or <code>null</code> if the function does not
+     *         exist
      * @throws RuneScriptException
      */
     public LuaValue executeFunction(String function, Object... args) throws RuneScriptException {
@@ -69,7 +71,7 @@ public class RuneScriptContext {
 		// throw exception when strict function calls are enabled
 		throw new RuneInvalidFunctionException(function);
 	    }
-	    return LuaValue.NIL;
+	    return null;
 	}
 
 	if (!(func instanceof LuaFunction)) {
