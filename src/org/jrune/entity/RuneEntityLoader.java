@@ -8,15 +8,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.script.Compilable;
-import javax.script.CompiledScript;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
 import org.jrune.core.RuneEngine;
 import org.jrune.core.RuneException;
+import org.jrune.script.RuneScriptContext;
 import org.jrune.script.RuneScriptException;
+import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.JsePlatform;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
@@ -71,10 +72,10 @@ public class RuneEntityLoader {
 	    if (properties.containsKey(RuneEntity.PROP_BASE)) {
 		Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer(
 		    "loading base entity = " + properties.get(RuneEntity.PROP_BASE));
-		e = new RuneEntity(load(properties.get(RuneEntity.PROP_BASE)));
+		e = new RuneEntity(load(properties.get(RuneEntity.PROP_BASE)), engine);
 	    } else {
 		Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer("no base entity");
-		e = new RuneEntity();
+		e = new RuneEntity(engine);
 	    }
 
 	    // set all properties and possibly overwrite base entity
@@ -84,6 +85,7 @@ public class RuneEntityLoader {
 	    }
 
 	    // set relevant system properties
+	    e.setEngine(engine);
 	    e.setProperty(RuneEntity.PROP_ENTITY, entityName);
 
 	    // check if default script exists
@@ -96,18 +98,10 @@ public class RuneEntityLoader {
 	    }
 	    
 	    // load entity script
+	    // TODO outsource to script compiler class and do here only if precompiled scripts option is enabled
 	    if (e.hasProperty(RuneEntity.PROP_SCRIPT) ) {
-		ScriptEngineManager sem = new ScriptEngineManager();
-		ScriptEngine se = sem.getEngineByExtension(".lua");
-		CompiledScript cs = null;
-		try {
-		    String scriptPath = engine.basePath() + File.separator + "script" + File.separator + e.getProperty(RuneEntity.PROP_SCRIPT);
-		    cs = ((Compilable) se).compile(new FileReader(scriptPath));
-		} catch (ScriptException | FileNotFoundException e1) {
-		    throw new RuneScriptException("compiling script of entity " + e + " failed", e1);
-		}
-		e.setScript(cs);
-		
+		RuneScriptContext scontext = new RuneScriptContext(e);
+		e.setScriptContext(scontext);
 		// invoke blueprint init function
 		e.call("_bp_init");
 	    }

@@ -38,6 +38,9 @@ public abstract class RuneEngineState {
 	// constants
 	private static final String PERSIST_KEY_ENTITIES = "entities";
 	
+	// variables
+	protected RuneEngine engine;
+	
 	/**
 	 * Provides all currently active clones of entity blueprints aka
 	 * all active entity clones.
@@ -116,7 +119,7 @@ public abstract class RuneEngineState {
 		for(int i=0; i<aEntities.length(); ++i) {
 		    JSONObject jEntity = aEntities.getJSONObject(i);
 		    // generate entity from json
-		    RuneEntity e = new RuneEntity();
+		    RuneEntity e = new RuneEntity(engine);
 		    for(String prop: jEntity.keySet()) {
 			e.setProperty(prop, jEntity.getString(prop));
 			Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finest(prop+" = "+jEntity.getString(prop));
@@ -138,4 +141,18 @@ public abstract class RuneEngineState {
 	 * empty state. Just like freshly hatched.
 	 */
 	public abstract void discard();
+	
+	/**
+	 * Associates this state with the given engine. This will cause all entities, maps etc. to get
+	 * a new engine link assigned.
+	 * @param engine
+	 */
+	public void setEngine(RuneEngine engine) {
+	    this.engine = engine;
+	    
+	    for(String id: getActiveEntityIds()) {
+		RuneEntity e = getActiveEntity(id);
+		e.setEngine(engine);
+	    }
+	}
 }

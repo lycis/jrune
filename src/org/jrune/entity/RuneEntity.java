@@ -4,13 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.script.Bindings;
-import javax.script.CompiledScript;
-import javax.script.ScriptException;
-import javax.script.SimpleBindings;
-
+import org.jrune.core.RuneEngine;
+import org.jrune.script.RuneScriptContext;
 import org.jrune.script.RuneScriptException;
-import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaError;
+import org.luaj.vm2.LuaValue;
 
 /**
  * This represents any entity within the game with.
@@ -48,11 +46,13 @@ public class RuneEntity {
 	
 	// internal variables
 	private Map<String, String> properties; // properties of entity
-	private CompiledScript script;
+	private RuneScriptContext scriptContext;
+	private RuneEngine engine;
 	
 	// constructors
-	public RuneEntity() {
+	public RuneEntity(RuneEngine engine) {
 		properties = new HashMap<>();
+		this.engine = engine;
 	}
 	
 	/**
@@ -61,11 +61,12 @@ public class RuneEntity {
 	 * property hooks.
 	 * @param blueprint
 	 */
-	public RuneEntity(RuneEntity blueprint) {
-		this();
+	public RuneEntity(RuneEntity blueprint, RuneEngine engine) {
+		this(engine);
 		for(String prop: blueprint.properties.keySet()) {
 			properties.put(prop, blueprint.properties.get(prop));
 		}
+		setScriptContext(blueprint.getScriptContext());
 	}
 	
 	// methods
@@ -136,8 +137,8 @@ public class RuneEntity {
 	 * Provides the caller with the compiled script of the entity.
 	 * @return <code>null</code> if no script is set
 	 */
-	public CompiledScript getScript() {
-	    return script;
+	public RuneScriptContext getScriptContext() {
+	    return scriptContext;
 	}
 	
 	/**
@@ -145,8 +146,8 @@ public class RuneEntity {
 	 * done beforehand.
 	 * @param script
 	 */
-	public void setScript(CompiledScript script) {
-	    this.script = script;
+	public void setScriptContext(RuneScriptContext context) {
+	    scriptContext = context;
 	}
 	
 	@Override
@@ -162,30 +163,26 @@ public class RuneEntity {
 	// TODO this should be a varargs function for passing arguments to the action
 	public void call(String action) throws RuneScriptException {
 	    // TODO throw runtime exceptions when engine has option "error on missing script/action"
-	    if(script == null) {
+	    if(scriptContext == null) {
 		return;
 	    }
 	    
-	    // TODO do the call in a script context (that has links to engine, etc.) and provides
-	    //      API functions
-	    Bindings sb = new SimpleBindings();
-	    try {
-		script.eval(sb);
-	    } catch (ScriptException e) {
-		throw new RuneScriptException("error in action call '"+action+"'", e);
-	    }
-	    Object potentialFunc = sb.get(action);
-	    
-	    if(potentialFunc == null) {
-		// function does not exist
-		return;
-	    }
-	    
-	    if(!(potentialFunc instanceof LuaFunction)) {
-		// no function
-		return;
-	    }
-	    
-	    ((LuaFunction) potentialFunc).call();
+	    scriptContext.call(action);
+	}
+	
+	/**
+	 * Provides a link to the rune engine that this entity is registered to.
+	 * @return
+	 */
+	public RuneEngine getEngine() {
+	    return engine;
+	}
+	
+	/**
+	 * Reassigns this entity to the given engine.
+	 * @param engine
+	 */
+	public void setEngine(RuneEngine engine) {
+	    this.engine = engine;
 	}
 }

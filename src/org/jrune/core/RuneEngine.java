@@ -166,7 +166,7 @@ public class RuneEngine {
 	    }
 	}
 
-	RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName));
+	RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName), this);
 	_gameState.addActiveEntity(e);
 	return e;
     }
