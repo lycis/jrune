@@ -2,6 +2,7 @@ package org.jrune.script;
 
 import java.io.File;
 
+import org.jrune.core.RuneEngine;
 import org.jrune.entity.RuneEntity;
 import org.luaj.vm2.Globals;
 import org.luaj.vm2.LuaError;
@@ -20,13 +21,13 @@ import org.luaj.vm2.lib.jse.JsePlatform;
  */
 public class RuneScriptContext {
 
-    //private LuaValue script = null;
+    // private LuaValue script = null;
     private RuneEntity entity = null;
     private Globals luaGlobals = null;
 
     /**
-     * Provides a script context for the given entity. This does <i>not</i> assign the script context
-     * as primary script context for this entity!
+     * Provides a script context for the given entity. This does <i>not</i>
+     * assign the script context as primary script context for this entity!
      * 
      * @param entity
      * @throws RuneScriptException
@@ -44,31 +45,35 @@ public class RuneScriptContext {
 	} catch (LuaError e1) {
 	    throw new RuneScriptException("compiling script of entity " + entity + " failed", e1);
 	}
-	
+
 	// set API references
 	luaGlobals.STDOUT = System.out; // TODO change to logger
-	luaGlobals.set("self", CoerceJavaToLua.coerce(entity)); // TODO do not pass entity directly but wrapped 
+	// TODO do not pass entity directly but wrapped
+	luaGlobals.set("self", CoerceJavaToLua.coerce(entity)); 
     }
 
     /**
-     * Calls a lua function as action
-     * TODO actions will be registered on the entity in YML and map to functions
+     * Calls a lua function as action 
      * 
      * @param action
      * @throws RuneScriptException
      */
     public void call(String action) throws RuneScriptException {
+	// TODO actions will be registered on the entity in YML and map to functions
 	LuaValue func = luaGlobals.get(action);
-	if(func == null || func == LuaValue.NIL) {
+	if (func == null || func == LuaValue.NIL) {
 	    // function not found
-	    // TODO throw exception when engine is in "hard" mode
+	    if (entity.getEngine().isOptionEnabled(RuneEngine.OPTION_STRICT_FUNCALL)) {
+		// throw exception when strict function calls are enabled
+		throw new RuneInvalidFunctionException(action);
+	    }
 	    return;
 	}
-	
-	if(!(func instanceof LuaFunction)) {
+
+	if (!(func instanceof LuaFunction)) {
 	    throw new RuneScriptException(action + " is not a function");
 	}
-	
+
 	func.call();
     }
 }

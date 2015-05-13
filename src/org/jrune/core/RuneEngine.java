@@ -30,6 +30,13 @@ public class RuneEngine {
      * will be loaded at startup.
      */
     public static int OPTION_LAZY_LOAD = 1;
+    
+    /**
+     * Option for strict function calls. When enabled the call of a script function
+     * that does not exist causes a Runtime Exception. This will also happen when
+     * a action should be called on a non-scripted entity.
+     */
+    public static int OPTION_STRICT_FUNCALL = 2;
 
     public static String LOGGER_SUBSYSTEM = "org.jrune";
 

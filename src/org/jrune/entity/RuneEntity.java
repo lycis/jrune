@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jrune.core.RuneEngine;
+import org.jrune.core.RuneRuntimeException;
+import org.jrune.script.RuneNoScriptException;
 import org.jrune.script.RuneScriptContext;
 import org.jrune.script.RuneScriptException;
 import org.luaj.vm2.LuaError;
@@ -161,8 +163,11 @@ public class RuneEntity {
 	 */
 	// TODO this should be a varargs function for passing arguments to the action
 	public void call(String action) throws RuneScriptException {
-	    // TODO throw runtime exceptions when engine has option "error on missing script/action"
 	    if(scriptContext == null) {
+		if(engine.isOptionEnabled(RuneEngine.OPTION_STRICT_FUNCALL)) {
+		    // throw exception when strict function calls are enabled
+		    throw new RuneNoScriptException();
+		}
 		return;
 	    }
 	    
