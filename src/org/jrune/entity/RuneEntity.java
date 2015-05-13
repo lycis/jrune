@@ -171,7 +171,7 @@ public class RuneEntity {
 		return;
 	    }
 	    
-	    scriptContext.call(action);
+	    scriptContext.executeFunction(action);
 	}
 	
 	/**

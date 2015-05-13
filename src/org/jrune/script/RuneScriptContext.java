@@ -53,25 +53,25 @@ public class RuneScriptContext {
     }
 
     /**
-     * Calls a lua function as action 
+     * Invokes a Lua function that is defined in the assigned entity.
      * 
-     * @param action
+     * @param function name of the function
      * @throws RuneScriptException
      */
-    public void call(String action) throws RuneScriptException {
+    public void executeFunction(String function) throws RuneScriptException {
 	// TODO actions will be registered on the entity in YML and map to functions
-	LuaValue func = luaGlobals.get(action);
+	LuaValue func = luaGlobals.get(function);
 	if (func == null || func == LuaValue.NIL) {
 	    // function not found
 	    if (entity.getEngine().isOptionEnabled(RuneEngine.OPTION_STRICT_FUNCALL)) {
 		// throw exception when strict function calls are enabled
-		throw new RuneInvalidFunctionException(action);
+		throw new RuneInvalidFunctionException(function);
 	    }
 	    return;
 	}
 
 	if (!(func instanceof LuaFunction)) {
-	    throw new RuneScriptException(action + " is not a function");
+	    throw new RuneScriptException(function + " is not a function");
 	}
 
 	func.call();
