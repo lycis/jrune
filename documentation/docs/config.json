@@ -1,0 +1,26 @@
+{
+    "title": "JRune",
+    "tagline": "An open source game engine for Java",
+    "author": "Daniel Eder",   
+    "theme": "daux-red",
+    "template": "default",
+    "clean_urls": true,
+    "toggle_code": true,
+    "breadcrumbs": false,
+    "breadcrumb_separator": "Chevrons",
+    "date_modified": true,
+    "float": true,
+    "file_editor": false,   
+    "repo": "lycis/jrune",
+    "ignore": {
+            "files": ["Work_In_Progress.md"],
+            "folders": ["99_Not_Ready"]
+    },
+    "twitter": ["ederdan"],
+    "google_analytics": "UA-12653604-10",
+    "links": {
+        "Download": "https://github.com/lycis/jrune/archive/master.zip",
+        "GitHub Repo": "https://github.com/lycis/jrune",
+        "Help/Support/Bugs": "https://github.com/lycis/jrune/issues"
+    }
+}

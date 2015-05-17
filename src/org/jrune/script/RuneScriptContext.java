@@ -63,7 +63,6 @@ public class RuneScriptContext {
      * @throws RuneScriptException
      */
     public LuaValue executeFunction(String function, Object... args) throws RuneScriptException {
-	// TODO actions will be registered on the entity in YML and map to functions
 	LuaValue func = luaGlobals.get(function);
 	if (func == null || func == LuaValue.NIL) {
 	    // function not found

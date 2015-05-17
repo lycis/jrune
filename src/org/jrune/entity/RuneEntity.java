@@ -188,4 +188,6 @@ public class RuneEntity {
 	public void setEngine(RuneEngine engine) {
 	    this.engine = engine;
 	}
+	
+	// TODO actions will be registered on the entity in YML and map to functions
 }
