@@ -12,17 +12,17 @@ the game world.
 ![Entity](../../img/entity.png "Entity")
 
 ## Properties
-Each entity has two kinds of properties it can hold. System Properties and Entity Properties. 
+Each entity has two kinds of properties it can hold. System Properties and Entity Properties.
 
 The first are *System Properties*. These are used and defined by the engine. Every system
 property has a specific purpose and is usually relevant for some extended functionality like
 inheritance or scripting. Some of them like `$base` or `$script` can safely be overwritten
 or defined by the user, others like  `$uid` or `$entity` must not be touched. They are
 managed by the engine and mostly for internal use. You can get a more in depth look at those
-properties in the section *System Properties* of the [Properties](01_Properties)
+properties in the section *System Properties* of the [Properties](Properties)
 documentation page.
 
-*Entity Properties* on the other hand are completely in the scope of the user. They can be 
+*Entity Properties* on the other hand are completely in the scope of the user. They can be
 defined and changed as you like.
 
 ## Definition
@@ -40,12 +40,12 @@ description: A nifty goblin.
 
 The location of the entity also directly
 affects its name: Similar to Java packages the name of an entity is derived from the
-folder structure it is placed in. For example an entity placed in the file 
+folder structure it is placed in. For example an entity placed in the file
 `entity/npc/goblins/goblin.yml` will be named `npc.goblins.goblin` and it (or more likely
 it's blueprint) can be referred to by this name.
 
-In general the structure of entities is tree-like. As entities also support 
-[inheritance](02_Inheritance) the location in the folder tree can be used to support this.
+In general the structure of entities is tree-like. As entities also support
+[inheritance](Inheritance) the location in the folder tree can be used to support this.
 For example when the entity `npc.goblins.goblin` inherits from a generic `npc.monster`
 entity you should place the files in `entity/npc/monster.yml` and
 `entity/npc/goblins/goblin.yml`. Thereby it is more obvious to any game developer that the
