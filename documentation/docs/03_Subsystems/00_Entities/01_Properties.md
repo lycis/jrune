@@ -75,3 +75,24 @@ There is finite list of system properties that are listed here:
       for details.</td>
 </tr>
 </table>
+
+## Defining Properties
+Intially every entity has an entity definition that is represented by an YAML file
+in the `entity` directory. It contains the initial property values for an entity.
+
+When an entity is loaded the first time its properties will be initialised with
+the values given therein. After this initial load you can add and modify them
+to adapt the entity to your needs.
+
+```
+$base: npc.monster
+name: Goblin
+hp: 10
+description: A nifty goblin.
+```
+
+### Rules for Properties
+The name of each property is up to you with one exception: It must not start with
+a `$` sign. This indicates that the entity is a system entity. The value may be
+a string of any form. Currently the engine does not support the use of structured
+values for properties (e.g. lists).
