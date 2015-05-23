@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/lycis/jrune.png?label=ready&title=Ready)](https://waffle.io/lycis/jrune)
 # jrune
 Rune is a map-based role playing game engine. It is designed for ROUGE- or
 MUD-like games but may be used for any kind of RPGs as it is inherently
