@@ -5,8 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import javax.script.ScriptException;
-
 import org.jrune.entity.InvalidEntityException;
 import org.jrune.entity.RuneEntity;
 import org.jrune.entity.RuneEntityLoader;

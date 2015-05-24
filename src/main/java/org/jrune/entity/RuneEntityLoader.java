@@ -14,10 +14,6 @@ import org.jrune.core.RuneEngine;
 import org.jrune.core.RuneException;
 import org.jrune.script.RuneScriptContext;
 import org.jrune.script.RuneScriptException;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 import com.esotericsoftware.yamlbeans.YamlException;
 import com.esotericsoftware.yamlbeans.YamlReader;
@@ -66,6 +62,7 @@ public class RuneEntityLoader {
 
 	RuneEntity e = null;
 	try {
+	    @SuppressWarnings("unchecked")
 	    Map<String, String> properties = (Map<String, String>) reader.read();
 
 	    // inerhit from base entity if given

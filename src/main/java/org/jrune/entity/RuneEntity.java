@@ -5,12 +5,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.jrune.core.RuneEngine;
-import org.jrune.core.RuneRuntimeException;
 import org.jrune.script.RuneNoScriptException;
 import org.jrune.script.RuneScriptContext;
 import org.jrune.script.RuneScriptException;
-import org.luaj.vm2.LuaError;
-import org.luaj.vm2.LuaValue;
 
 /**
  * This represents any entity within the game with.
