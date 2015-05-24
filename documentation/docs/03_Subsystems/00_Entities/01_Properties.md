@@ -89,6 +89,7 @@ $base: npc.monster
 name: Goblin
 hp: 10
 description: A nifty goblin.
+
 ```
 
 ### Rules for Properties
@@ -96,3 +97,78 @@ The name of each property is up to you with one exception: It must not start wit
 a `$` sign. This indicates that the entity is a system entity. The value may be
 a string of any form. Currently the engine does not support the use of structured
 values for properties (e.g. lists).
+
+## Working with Properties
+
+### Reading Values
+It is pretty simple to read the value of a property. They are always of type
+`String` and can be accessed by using method `getProperty(String prop)`. If
+you want to get a property as a specific type like `Integer` or `Boolean`
+you can use the method `getPropertyAs(Class type, String prop)` that will
+try to convert the value of the property to the given type.
+
+```java
+// read different properties
+RuneEntity entity = engine.clone("npc.goblins.goblin");
+
+String strValue = entity.getProperty("name");
+Integer intValue = entity.getPropertyAs(Integer.class, "hp");
+```
+
+The engine already provides some built-in conversions for the following
+types:
+
+  * Short
+  * Integer
+  * Long
+  * Float
+  * Double
+  * Boolean
+
+If you want to have your own conversion you can provide it by implementing
+the a conversion class with the interface `IRunePropertyValueConversion` and
+registering it with the static method `registerPropertyValueConversion` of
+class `RuneEntity`.
+
+```java
+// implementation of integer conversion
+class IntegerConversion implements IRunePropertyValueConversion<Integer> {
+  @Override
+  public String toPropertyValue(Integer from) {
+    return from.toString();
+  }
+
+  @Override
+  public Integer fromPropertyValue(String value) {
+    return new Integer(value);
+  }
+}
+
+// register it with the engine
+RuneEntity.registerPropertyValueConversion(Integer.class, new IntegerConversion());
+```
+
+### Modifying Properties at Runtime
+Once an entity was cloned from a blueprint (see [Lifecycle](Lifecycle)) you can
+modify its properties.  To modify the value of an entity use the method
+`setProperty(String prop, String value)`.
+
+```java
+// modify the property of a clone
+RuneEntity clone = engine.cloneEntity("npc.goblins.goblin");
+clone.setProperty("hp", 40); // set hit point property to 20
+System.out.println(clone.getProperty("hp")); // --> 40
+```
+
+You may also changed the properties of a blueprint entity but this will affect
+any further clones you create!
+
+```java
+// modify the property of a blueprint
+RuneEntity blueprint = engine.getBlueprint("npc.goblins.goblin");
+blueprint.setProperty("hp", 20);
+
+// from this point on every clone of npc.goblins.goblin has hp set to 20
+RuneEntity clone = engine.cloneEntity("npc.goblins.goblin");
+System.out.println(clone.getProperty("hp")); // --> 20
+```
