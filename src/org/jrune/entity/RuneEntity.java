@@ -46,10 +46,18 @@ public class RuneEntity {
 	/** system property that identifies the associated script file **/
 	public static String PROP_SCRIPT   = "$script";
 	
+	// mapping of class type to conversion algorithm
+	private static Map<Class<?>, IRunePropertyValueConversion<?> > valueConversionMap = new HashMap<>();
+	
 	// internal variables
 	private Map<String, String> properties; // properties of entity
 	private RuneScriptContext scriptContext;
 	private RuneEngine engine;
+	
+	// static initialisation block
+	static {
+	    registerPropertyValueConversion(String.class, new StringConversion());
+	}
 	
 	// constructors
 	public RuneEntity(RuneEngine engine) {
@@ -77,8 +85,20 @@ public class RuneEntity {
 	 * @param prop
 	 * @param value
 	 */
-	public void setProperty(String prop, String value) {
-		properties.put(prop, value);
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void setProperty(String prop, Object value) {
+	    Class<?> valueClass = value.getClass();
+	    
+	    // check if conversion for that type is registered
+	    if(!valueConversionMap.containsKey(value.getClass())) {
+		// throw error if not
+		throw new RuneMissingConversionForTypeException(value.getClass().toString());
+	    }
+	    
+	    // convert value
+	    IRunePropertyValueConversion conversion = valueConversionMap.get(valueClass);
+	    
+	    properties.put(prop, conversion.toPropertyValue(value));
 	}
 	
 	/**
@@ -190,4 +210,15 @@ public class RuneEntity {
 	}
 	
 	// TODO actions will be registered on the entity in YML and map to functions
+	
+	/**
+	 * Registers a new conversion algorithm for a type of object (= class). When
+	 * setting a property to an object it will be converted using this algorithm.
+	 * 
+	 * @param type class that will be converted
+	 * @param conversion algorithm for conversion
+	 */
+	public static <T> void registerPropertyValueConversion(Class<T> type, IRunePropertyValueConversion<T> conversion) {
+	    valueConversionMap.put(type, conversion);
+	}
 }
