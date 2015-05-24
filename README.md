@@ -1,4 +1,6 @@
+[![Build Status](https://travis-ci.org/lycis/jrune.svg?branch=master)](https://travis-ci.org/lycis/jrune)
 [![Stories in Ready](https://badge.waffle.io/lycis/jrune.png?label=ready&title=Ready)](https://waffle.io/lycis/jrune)
+
 # jrune
 Rune is a map-based role playing game engine. It is designed for ROUGE- or
 MUD-like games but may be used for any kind of RPGs as it is inherently
@@ -13,7 +15,7 @@ directory. It is intended to be used as base for [daux.io](http://daux.io/index)
 to compile a neat HTML documentation but you may as well read it in
 plain text. Some day it will also be provided on the web.
 
-To compile the HTML documentation yourself follow the instructions on 
+To compile the HTML documentation yourself follow the instructions on
 [daux.io](http://daux.io/index) and copy the contents of the `documentation` folder
 to the root directory of daux.io. To generate static HTML pages invoke the
 following command in the root folder of daux.io.
