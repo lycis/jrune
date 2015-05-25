@@ -1,0 +1,5 @@
+name: Some Monster
+hp: 100
+$passable: 0
+description: some scary monster
+inheritedValue: parent

@@ -1,0 +1,4 @@
+$base: npc.monster
+name: Goblin
+hp: 10
+description: A nifty goblin.
