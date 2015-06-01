@@ -1,4 +1,4 @@
-package org.jrune.test;
+package org.jrune.entity;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -50,6 +50,16 @@ public class RuneEntityTest {
 	RuneEntity entity = new RuneEntity(engine);
 	entity.setProperty("int", 1);
 	assertEquals("1", entity.getProperty("int"));
+    }
+    
+    /**
+     * Setting short properties.
+     */
+    @Test
+    public void testSetPropertyShort() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("short", 9);
+	assertEquals("9", entity.getProperty("short"));
     }
     
     /**
