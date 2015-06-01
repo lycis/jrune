@@ -82,13 +82,33 @@ public class RuneEntityTest {
     }
     
     /**
-     * Setting float properties.
+     * Setting double properties.
      */
     @Test
     public void testSetPropertyDouble() {
 	RuneEntity entity = new RuneEntity(engine);
 	entity.setProperty("double", 9.77);
 	assertEquals(new Double(9.77), entity.getProperty(Double.class, "double"));
+    }
+    
+    /**
+     * Setting boolean properties.
+     */
+    @Test
+    public void testSetPropertyBooleanTrue() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("bool", true);
+	assertTrue(entity.getProperty(Boolean.class, "bool"));
+    }
+    
+    /**
+     * Setting boolean properties.
+     */
+    @Test
+    public void testSetPropertyBooleanFalse() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("bool", false);
+	assertFalse(entity.getProperty(Boolean.class, "bool"));
     }
     
     /**
