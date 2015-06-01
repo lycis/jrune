@@ -72,6 +72,16 @@ public class RuneEntityTest {
     }
     
     /**
+     * Setting float properties.
+     */
+    @Test
+    public void testSetPropertyFloat() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("float", 9.77f);
+	assertEquals(new Float(9.77f), entity.getProperty(Float.class, "float"));
+    }
+    
+    /**
      * hasProperty(...)
      */
     @Test
