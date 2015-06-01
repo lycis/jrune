@@ -58,6 +58,7 @@ public class RuneEntity {
 	registerPropertyValueConversion(Short.class, new ShortConversion());
 	registerPropertyValueConversion(Long.class, new LongConversion());
 	registerPropertyValueConversion(Float.class, new FloatConversion());
+	registerPropertyValueConversion(Double.class, new DoubleConversion());
     }
 
     // constructors
