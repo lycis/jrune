@@ -43,6 +43,16 @@ public class RuneEntityTest {
     }
     
     /**
+     * Setting integer properties.
+     */
+    @Test
+    public void testSetPropertyInteger() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("int", 1);
+	assertEquals("1", entity.getProperty("int"));
+    }
+    
+    /**
      * hasProperty(...)
      */
     @Test
