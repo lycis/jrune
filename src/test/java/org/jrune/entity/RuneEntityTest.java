@@ -62,6 +62,16 @@ public class RuneEntityTest {
     }
     
     /**
+     * Setting long properties.
+     */
+    @Test
+    public void testSetPropertyLong() {
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty("long", 9L);
+	assertEquals(new Long(9L), entity.getProperty(Long.class, "long"));
+    }
+    
+    /**
      * hasProperty(...)
      */
     @Test
