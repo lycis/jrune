@@ -124,6 +124,7 @@ types:
   * Float
   * Double
   * Boolean
+  * String
 
 If you want to have your own conversion you can provide it by implementing
 the a conversion class with the interface `IRunePropertyValueConversion` and

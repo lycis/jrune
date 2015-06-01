@@ -29,6 +29,7 @@ public interface IRunePropertyValueConversion<T> {
      * Convert a property value (string format) to an object.
      * @param value string-based property value
      * @return object
+     * @throws IllegalArgumentException when the value can not be parsed
      */
-    public T fromPropertyValue(String value);
+    public T fromPropertyValue(String value) throws IllegalArgumentException;
 }
