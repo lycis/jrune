@@ -106,28 +106,29 @@ public class RuneEntity {
     }
 
     /**
-     * Provides the value of a property. In case this property does not exist it
-     * will return an empty string.
+     * Provides the value of a property as string. In case this property does
+     * not exist it will return an <code>null</code>.
      * 
      * @param prop
      * @return
      */
     public String getProperty(String prop) {
-	if (!hasProperty(prop)) {
-	    return "";
-	}
-
-	return properties.get(prop);
+	return getProperty(String.class, prop);
     }
 
     /**
-     * Get property value and automatically convert it to the given type.
+     * Get property value and automatically convert it to the given type. In
+     * case this property does not exist it will return an <code>null</code>.
      * 
-     * @param type desired return type (e.g. Integer.class)
-     * @param prop name of the property
+     * @param type
+     *            desired return type (e.g. Integer.class)
+     * @param prop
+     *            name of the property
      * @return value of the property converted to the desired type
-     * @throws RuneMissingConversionForTypeException there is no conversion for this type
-     * @throws IllegalArgumentException the property value could not be converted
+     * @throws RuneMissingConversionForTypeException
+     *             there is no conversion for this type
+     * @throws IllegalArgumentException
+     *             the property value could not be converted
      */
     @SuppressWarnings("unchecked")
     public <T> T getProperty(Class<T> type, String prop) throws RuneMissingConversionForTypeException, IllegalArgumentException {
@@ -138,12 +139,12 @@ public class RuneEntity {
 	}
 
 	// -> null if property is not available
-	if(!hasProperty(prop)) {
+	if (!hasProperty(prop)) {
 	    return null;
 	}
-	
+
 	// convert value
-	String value = getProperty(prop);
+	String value = properties.get(prop);
 	IRunePropertyValueConversion<?> conversion = valueConversionMap.get(type);
 	return (T) conversion.fromPropertyValue(value);
     }
