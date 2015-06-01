@@ -11,7 +11,6 @@ import java.util.Set;
 
 import org.jrune.core.RuneEngine;
 import org.jrune.core.RuneException;
-import org.jrune.entity.RuneEntity;
 import org.jrune.script.RuneScriptException;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,8 +47,8 @@ public class RuneEntityTest {
     @Test
     public void testSetPropertyInteger() {
 	RuneEntity entity = new RuneEntity(engine);
-	entity.setProperty("int", 1);
-	assertEquals("1", entity.getProperty("int"));
+	entity.setProperty("int", (int) 1);
+	assertEquals(new Integer(1), entity.getProperty(Integer.class, "int"));
     }
     
     /**
@@ -58,8 +57,8 @@ public class RuneEntityTest {
     @Test
     public void testSetPropertyShort() {
 	RuneEntity entity = new RuneEntity(engine);
-	entity.setProperty("short", 9);
-	assertEquals("9", entity.getProperty("short"));
+	entity.setProperty("short", (short) 9);
+	assertEquals(new Short((short) 9), entity.getProperty(Short.class, "short"));
     }
     
     /**
