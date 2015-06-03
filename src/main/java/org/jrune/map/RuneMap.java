@@ -126,6 +126,26 @@ public class RuneMap {
 	    return false;
 	}
 	
+	// remove from old location
+	if(e.hasProperty(RuneEntity.PROP_LOCATION) && !e.getProperty(RuneEntity.PROP_LOCATION).isEmpty()) {
+	    String[] location = e.getProperty(RuneEntity.PROP_LOCATION).split(":");
+	    
+	    // get map
+	    RuneMap originalMap = null;
+	    if(getName().equals(location[0])) {
+		originalMap = this;
+	    } else {
+		// TODO use engine to get other map
+	    }
+	    
+	    int oldX = Integer.parseInt(location[1]);
+	    int oldY = Integer.parseInt(location[2]);
+	    
+	    List<RuneEntity> originalPos = originalMap.getEntitiesAt(oldX, oldY);
+	    originalPos.remove(e);
+	}
+	
+	// add to new location
 	List<RuneEntity> entitiesAtLocation = getEntitiesAt(x, y);
 	entitiesAtLocation.add(e);
 	e.setProperty(RuneEntity.PROP_LOCATION, getName()+":"+x+":"+y);
