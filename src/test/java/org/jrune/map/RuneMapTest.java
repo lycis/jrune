@@ -61,12 +61,38 @@ public class RuneMapTest {
     }
     
     @Test
-    public void placeSameEntityTwiceOnSameSquare() {
-	// TODO
+    public void placeSameEntityTwiceOnSameSquare() throws UnknownEntityException, RuneScriptException {
+	RuneEntity e = engine.cloneEntity("npc.goblins.goblin");
+	RuneMap map = new RuneMap(engine, 20, 20);
+	map.setName("testmap");
+	
+	assertTrue("could not place entity the first time", 
+	           map.setEntityPosition(e.getProperty(RuneEntity.PROP_UID), 10, 10));
+	assertTrue("entity not on target position", map.getEntitiesAt(10, 10).contains(e));
+	assertTrue("could not place entity the second time", 
+	           map.setEntityPosition(e.getProperty(RuneEntity.PROP_UID), 10, 10));
+	int countEntityOccurance = 0;
+	for(RuneEntity x: map.getEntitiesAt(10, 10)) {
+	    if(e.equals(x)) {
+		countEntityOccurance++;
+	    }
+	}
+	
+	assertEquals("entity listed multiple times at the same position", 1, countEntityOccurance);
     }
     
     @Test
-    public void moveEntityToAnotherSquare() {
-	// TODO
+    public void moveEntityToAnotherSquare() throws UnknownEntityException, RuneScriptException {
+	RuneEntity e = engine.cloneEntity("npc.goblins.goblin");
+	RuneMap map = new RuneMap(engine, 20, 20);
+	map.setName("testmap");
+	
+	assertTrue("could not place entity the first time", 
+	           map.setEntityPosition(e.getProperty(RuneEntity.PROP_UID), 10, 10));
+	assertTrue("could not move entity to another square",
+	    	   map.setEntityPosition(e.getProperty(RuneEntity.PROP_UID), 11, 11));
+	
+	assertFalse("entity was not removed from original position", map.getEntitiesAt(10, 10).contains(e));
+	assertTrue("entity not on target position", map.getEntitiesAt(11, 11).contains(e));
     }
 }
