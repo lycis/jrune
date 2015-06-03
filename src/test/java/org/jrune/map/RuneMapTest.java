@@ -62,7 +62,7 @@ public class RuneMapTest {
     
     @Test
     public void placeSameEntityTwiceOnSameSquare() throws UnknownEntityException, RuneScriptException {
-	RuneEntity e = engine.cloneEntity("npc.goblins.goblin");
+	RuneEntity e = engine.cloneEntity("items.arrow");
 	RuneMap map = new RuneMap(engine, 20, 20);
 	map.setName("testmap");
 	
@@ -95,4 +95,6 @@ public class RuneMapTest {
 	assertFalse("entity was not removed from original position", map.getEntitiesAt(10, 10).contains(e));
 	assertTrue("entity not on target position", map.getEntitiesAt(11, 11).contains(e));
     }
+    
+    // TODO test for moving entity between different maps
 }
