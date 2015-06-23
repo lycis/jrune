@@ -77,9 +77,9 @@ class DefaultEngineState extends RuneEngineState {
     }
 
     @Override
-    public void removeActiveMap(RuneMap map) {
-	if(activeMaps.containsKey(map.getName())) {
-	    activeMaps.remove(map.getName());
+    public void removeActiveMap(String name) {
+	if(activeMaps.containsKey(name)) {
+	    activeMaps.remove(name);
 	}
     }
 

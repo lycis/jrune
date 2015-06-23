@@ -168,7 +168,7 @@ public abstract class RuneEngineState {
 	 * Removes a map when it was unloaded by the engine. This will 
 	 * @param map
 	 */
-	public abstract void removeActiveMap(RuneMap map);
+	public abstract void removeActiveMap(String name);
 	
 	/**
 	 * Returns a list of the names of all active maps.

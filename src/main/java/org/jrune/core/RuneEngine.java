@@ -179,7 +179,13 @@ public class RuneEngine {
 	_gameState.addActiveEntity(e);
 	return e;
     }
-    
+    /**
+     * Initialise and load a map of the given name and add it to the actively
+     * managed maps.
+     * @param name name of the map
+     * @return loaded map
+     * @throws DuplicateMapLoadException the map is already loaded and active
+     */
     synchronized public RuneMap loadMap(String name) throws DuplicateMapLoadException {
 	if(_gameState.getActiveMap(name) != null) {
 	    throw new DuplicateMapLoadException(name);
@@ -191,8 +197,12 @@ public class RuneEngine {
 	return map;
     }
     
+    /**
+     * Unload and finalise a map.
+     * @param name name of the map
+     */
     synchronized public void unloadMap(String name) {
-	// TODO implement
+	_gameState.removeActiveMap(name);
     }
 
     /**
