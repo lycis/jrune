@@ -22,6 +22,10 @@ public class RuneMap {
     private RuneEngine engine = null;
     private String name = "";
     
+    public RuneMap() {
+	
+    }
+    
     /**
      * Initialises an empty map.
      */
@@ -265,7 +269,7 @@ public class RuneMap {
      * change the name of the map
      * @param name
      */
-    void setName(String name) {
+    public void setName(String name) {
 	this.name = name;
     }
 }

@@ -2,10 +2,12 @@ package org.jrune.core;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 import org.jrune.entity.RuneEntity;
+import org.jrune.map.RuneMap;
 
 /**
  * Default implementation for IRuneEngineState that is normally used without any
@@ -16,6 +18,7 @@ import org.jrune.entity.RuneEntity;
  */
 class DefaultEngineState extends RuneEngineState {
     private Map<String, RuneEntity> _activeEntities = new HashMap<>();
+    private Map<String, RuneMap> activeMaps = new HashMap<>();
 
     @Override
     public RuneEntity getActiveEntity(String id) {
@@ -64,6 +67,34 @@ class DefaultEngineState extends RuneEngineState {
 	// remove all entities from this state
 	_activeEntities.clear();
 
+    }
+
+    @Override
+    public void addActiveMap(RuneMap map) {
+	if(!activeMaps.containsKey(map.getName())) {
+	    activeMaps.put(map.getName(), map);
+	}
+    }
+
+    @Override
+    public void removeActiveMap(RuneMap map) {
+	if(activeMaps.containsKey(map.getName())) {
+	    activeMaps.remove(map.getName());
+	}
+    }
+
+    @Override
+    public Collection<String> getActiveMaps() {
+	return activeMaps.keySet();
+    }
+
+    @Override
+    public RuneMap getActiveMap(String name) {
+	if(!activeMaps.containsKey(name)) {
+	    return null;
+	}
+	
+	return activeMaps.get(name);
     }
 
 }

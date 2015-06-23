@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.jrune.entity.RuneEntity;
+import org.jrune.map.RuneMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -155,4 +156,30 @@ public abstract class RuneEngineState {
 		e.setEngine(engine);
 	    }
 	}
+	
+	/**
+	 * Add a map to the managed active maps. A map will be added to the state when
+	 * it is loaded.
+	 * @param map the loaded map
+	 */
+	public abstract void addActiveMap(RuneMap map);
+	
+	/**
+	 * Removes a map when it was unloaded by the engine. This will 
+	 * @param map
+	 */
+	public abstract void removeActiveMap(RuneMap map);
+	
+	/**
+	 * Returns a list of the names of all active maps.
+	 * @return
+	 */
+	public abstract Collection<String> getActiveMaps();
+	
+	/**
+	 * Returns a map with the given name that is currently active.
+	 * @param name
+	 * @return <code>null</code> if a map with the given name is not currently active
+	 */
+	public abstract RuneMap getActiveMap(String name);
 }

@@ -1,5 +1,6 @@
 package org.jrune.core;
 
+import java.io.File;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,6 +10,9 @@ import org.jrune.entity.InvalidEntityException;
 import org.jrune.entity.RuneEntity;
 import org.jrune.entity.RuneEntityLoader;
 import org.jrune.entity.UnknownEntityException;
+import org.jrune.map.DuplicateMapLoadException;
+import org.jrune.map.RuneMap;
+import org.jrune.map.RuneMapFactory;
 import org.jrune.script.RuneScriptException;
 
 /**
@@ -175,6 +179,21 @@ public class RuneEngine {
 	_gameState.addActiveEntity(e);
 	return e;
     }
+    
+    synchronized public RuneMap loadMap(String name) throws DuplicateMapLoadException {
+	if(_gameState.getActiveMap(name) != null) {
+	    throw new DuplicateMapLoadException(name);
+	}
+	
+	RuneMapFactory factory = new RuneMapFactory(this);
+	RuneMap map = factory.load(name);
+	_gameState.addActiveMap(map);
+	return map;
+    }
+    
+    synchronized public void unloadMap(String name) {
+	// TODO implement
+    }
 
     /**
      *  Provides the current state of the engine.
@@ -197,5 +216,21 @@ public class RuneEngine {
 	}
 	
 	return _blueprintRegister.get(name);
+    }
+    
+    /**
+     * Provides the data of a game file.
+     * @param name name of the game object
+     * @param type extension/type of what you want to get
+     * @return <code>null</code> if it does not exist
+     */
+    public File getGameFile(String name, String type) {
+	File gameFile = new File(basePath() + File.separator + name.replace('.', File.separatorChar) 
+	                         + "." + type);
+	if(!gameFile.exists()) {
+	    return null;
+	}
+	
+	return gameFile;
     }
 }
