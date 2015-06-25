@@ -73,13 +73,16 @@ public class RuneEntity {
      * a copy and circumvents any property hooks.
      * 
      * @param blueprint
+     * @throws RuneScriptException 
      */
-    public RuneEntity(RuneEntity blueprint, RuneEngine engine) {
+    public RuneEntity(RuneEntity blueprint, RuneEngine engine) throws RuneScriptException {
 	this(engine);
 	for (String prop : blueprint.properties.keySet()) {
 	    properties.put(prop, blueprint.properties.get(prop));
 	}
-	setScriptContext(blueprint.getScriptContext());
+	
+	// TODO inheritance of script context from parent blueprint
+	setScriptContext(new RuneScriptContext(this));
     }
 
     // methods

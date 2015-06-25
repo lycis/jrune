@@ -39,8 +39,7 @@ public class RuneScriptContext {
 
 	// load and compile script
 	try {
-	    String scriptPath = entity.getEngine().basePath() + File.separator + "script" + File.separator
-		+ entity.getProperty(RuneEntity.PROP_SCRIPT);
+	    String scriptPath = entity.getProperty(RuneEntity.PROP_SCRIPT);
 	    luaGlobals = JsePlatform.standardGlobals();
 	    LuaValue script = luaGlobals.loadfile(scriptPath).call();
 	    System.out.println(script.tojstring());

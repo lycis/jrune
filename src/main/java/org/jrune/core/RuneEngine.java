@@ -30,13 +30,15 @@ public class RuneEngine {
      * Option for lazy loading. When enabled the engine will load entities,
      * maps, scripts and other objects only when needed. If disabled everything
      * will be loaded at startup.
+     * 
+     * This option is enabled by default.
      */
-    public static int OPTION_LAZY_LOAD = 1;
-    
+    // public static int OPTION_LAZY_LOAD = 1;
+
     /**
-     * Option for strict function calls. When enabled the call of a script function
-     * that does not exist causes a Runtime Exception. This will also happen when
-     * a action should be called on a non-scripted entity.
+     * Option for strict function calls. When enabled the call of a script
+     * function that does not exist causes a Runtime Exception. This will also
+     * happen when a action should be called on a non-scripted entity.
      */
     public static int OPTION_STRICT_FUNCALL = 2;
 
@@ -64,17 +66,16 @@ public class RuneEngine {
 	Logger.getLogger(LOGGER_SUBSYSTEM).info("Engine is starting (options = " + options.toString() + ")");
 
 	// load entities (without OPTION_LAZY_LOAD
-	if (!isOptionEnabled(OPTION_LAZY_LOAD)) {
-	    Logger.getLogger(LOGGER_SUBSYSTEM).info("Lazy loading disabled. Loading ALL entities.");
-	    RuneEntityLoader el = new RuneEntityLoader(this);
-	    try {
-		el.loadAll("");
-	    } catch (RuneScriptException e) {
-		// a script could not be loaded
-		throw new RuneException("loading all entities failed", e);
-	    }
-	    Logger.getLogger(LOGGER_SUBSYSTEM).info("Loaded blueprints (" + _blueprintRegister.size() + ")");
-	}
+	/*
+	 * if (!isOptionEnabled(OPTION_LAZY_LOAD)) {
+	 * Logger.getLogger(LOGGER_SUBSYSTEM
+	 * ).info("Lazy loading disabled. Loading ALL entities.");
+	 * RuneEntityLoader el = new RuneEntityLoader(this); try {
+	 * el.loadAll(""); } catch (RuneScriptException e) { // a script could
+	 * not be loaded throw new RuneException("loading all entities failed",
+	 * e); } Logger.getLogger(LOGGER_SUBSYSTEM).info("Loaded blueprints (" +
+	 * _blueprintRegister.size() + ")"); }
+	 */
 
 	// instantiate game state if not already loaded
 	if (_gameState == null) {
@@ -159,88 +160,92 @@ public class RuneEngine {
     synchronized public RuneEntity cloneEntity(String entityName) throws UnknownEntityException, RuneScriptException {
 	Logger.getLogger(LOGGER_SUBSYSTEM).fine("Cloning entity = " + entityName);
 	if (!_blueprintRegister.containsKey(entityName)) {
-	    if (options.get(OPTION_LAZY_LOAD)) {
-		Logger.getLogger(LOGGER_SUBSYSTEM).fine("Lazy loading entity = " + entityName);
-		// lazy load entity
-		RuneEntityLoader loader = new RuneEntityLoader(this);
-		try {
-		    loader.load(entityName);
-		} catch (RuneRuntimeException ex) {
-		    Logger.getLogger(LOGGER_SUBSYSTEM).severe("Lazy loading failed: " + ex.getMessage());
-		    throw new UnknownEntityException(entityName, ex);
-		}
-	    } else {
-		Logger.getLogger(LOGGER_SUBSYSTEM).severe("UnknownEntity: " + entityName);
-		throw new UnknownEntityException(entityName);
+	    Logger.getLogger(LOGGER_SUBSYSTEM).fine("Lazy loading entity = " + entityName);
+	    // lazy load entity
+	    RuneEntityLoader loader = new RuneEntityLoader(this);
+	    try {
+		loader.load(entityName);
+	    } catch (RuneRuntimeException ex) {
+		Logger.getLogger(LOGGER_SUBSYSTEM).severe("Lazy loading failed: " + ex.getMessage());
+		throw new UnknownEntityException(entityName, ex);
 	    }
 	}
 
 	RuneEntity e = new RuneEntity(_blueprintRegister.get(entityName), this);
 	_gameState.addActiveEntity(e);
+	e.call("_init");
 	return e;
     }
+
     /**
      * Initialise and load a map of the given name and add it to the actively
      * managed maps.
-     * @param name name of the map
+     * 
+     * @param name
+     *            name of the map
      * @return loaded map
-     * @throws DuplicateMapLoadException the map is already loaded and active
+     * @throws DuplicateMapLoadException
+     *             the map is already loaded and active
      */
     synchronized public RuneMap loadMap(String name) throws DuplicateMapLoadException {
-	if(_gameState.getActiveMap(name) != null) {
+	if (_gameState.getActiveMap(name) != null) {
 	    throw new DuplicateMapLoadException(name);
 	}
-	
+
 	RuneMapFactory factory = new RuneMapFactory(this);
 	RuneMap map = factory.load(name);
 	_gameState.addActiveMap(map);
 	return map;
     }
-    
+
     /**
      * Unload and finalise a map.
-     * @param name name of the map
+     * 
+     * @param name
+     *            name of the map
      */
     synchronized public void unloadMap(String name) {
 	_gameState.removeActiveMap(name);
     }
 
     /**
-     *  Provides the current state of the engine.
+     * Provides the current state of the engine.
+     * 
      * @return
      */
     synchronized public RuneEngineState getState() {
 	return _gameState;
     }
-    
+
     /**
-     * Returns the blueprint of an entity with the given name. Modifications to the returned entity
-     * will result in changes of the actual blueprint.
+     * Returns the blueprint of an entity with the given name. Modifications to
+     * the returned entity will result in changes of the actual blueprint.
      * 
-     * @param name name of the entity blueprint
+     * @param name
+     *            name of the entity blueprint
      * @return <code>null</code> if no such blueprint is registered
      */
-    public RuneEntity getBlueprint(String name){
-	if(!_blueprintRegister.containsKey(name)) {
+    public RuneEntity getBlueprint(String name) {
+	if (!_blueprintRegister.containsKey(name)) {
 	    return null;
 	}
-	
+
 	return _blueprintRegister.get(name);
     }
-    
+
     /**
      * Provides the data of a game file.
-     * @param name name of the game object
-     * @param type extension/type of what you want to get
+     * 
+     * @param name
+     *            name of the game object
+     * @param type
+     *            extension/type of what you want to get
      * @return <code>null</code> if it does not exist
      */
     public File getGameFile(String name, String type) {
-	File gameFile = new File(basePath() + File.separator + name.replace('.', File.separatorChar) 
-	                         + "." + type);
-	if(!gameFile.exists()) {
-	    return null;
-	}
-	
+	File gameFile = new File(basePath() + File.separator + name.replace('.', File.separatorChar)
+	    + "." + type);
+
 	return gameFile;
     }
 }

@@ -40,82 +40,91 @@ public class RuneEntityLoader {
      *             thrown when an error occurred during loading of the entity
      *             script
      */
-    public RuneEntity load(String entityName) throws RuneScriptException {
-	Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).fine("Loading entity = " + entityName);
-	File entityFile = new File(engine.basePath() + File.separator + "entity"
-	    + File.separator + entityName.replace('.', File.separatorChar) + ".yml");
-
-	Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).fine("file = " + entityFile.getAbsolutePath());
-
-	if (!entityFile.exists()) {
-	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe("EntityDefinitionNotFound: " + entityName);
-	    throw new EntityDefinitionNotFoundException(entityName);
+    public RuneEntity load(String name) throws RuneScriptException {
+	File defFile = engine.getGameFile(name, "lua");
+	if (!defFile.exists()) {
+	    throw new EntityDefinitionNotFoundException(name);
 	}
 
-	YamlReader reader = null;
-	try {
-	    reader = new YamlReader(new FileReader(entityFile));
-	} catch (FileNotFoundException e) {
-	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe("EntityDefinitionNotFound: " + entityName);
-	    throw new EntityDefinitionNotFoundException(entityName);
-	}
+	RuneEntity entity = new RuneEntity(engine);
+	entity.setProperty(RuneEntity.PROP_ENTITY, name);
+	entity.setProperty(RuneEntity.PROP_SCRIPT, defFile.getAbsolutePath());
 
-	RuneEntity e = null;
-	try {
-	    @SuppressWarnings("unchecked")
-	    Map<String, String> properties = (Map<String, String>) reader.read();
+	RuneScriptContext scriptContext = new RuneScriptContext(entity);
 
-	    // inerhit from base entity if given
-	    if (properties.containsKey(RuneEntity.PROP_BASE)) {
-		Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer(
-		    "loading base entity = " + properties.get(RuneEntity.PROP_BASE));
-		e = new RuneEntity(load(properties.get(RuneEntity.PROP_BASE)), engine);
-	    } else {
-		Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer("no base entity");
-		e = new RuneEntity(engine);
-	    }
-
-	    // set all properties and possibly overwrite base entity
-	    for (String prop : properties.keySet()) {
-		Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finest("loaded property: " + prop + " = " + properties.get(prop));
-		e.setProperty(prop, properties.get(prop));
-	    }
-
-	    // set relevant system properties
-	    e.setEngine(engine);
-	    e.setProperty(RuneEntity.PROP_ENTITY, entityName);
-
-	    // check if default script exists
-	    if(!e.hasProperty(RuneEntity.PROP_SCRIPT)) {
-		String scriptPath = getScriptForEntity(e);
-		File f = new File(engine.basePath() + File.separator + "script" + File.separator + scriptPath);
-		if(f.exists()) {
-		    e.setProperty(RuneEntity.PROP_SCRIPT, scriptPath);
-		}
-	    }
-	    
-	    // load entity script
-	    // TODO outsource to script compiler class and do here only if precompiled scripts option is enabled
-	    if (e.hasProperty(RuneEntity.PROP_SCRIPT) ) {
-		RuneScriptContext scontext = new RuneScriptContext(e);
-		e.setScriptContext(scontext);
-		// invoke blueprint init function
-		e.call("_bp_init");
-	    }
-
-	} catch (ClassCastException ex) {
-	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe(
-		"InvalidEntity: invalid file format (cause: " + ex.getMessage() + ")");
-	    throw new InvalidEntityException("invalid file format", ex);
-	} catch (YamlException ex) {
-	    Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe(
-		"InvalidEntity: error in entity description (cause: " + ex.getMessage() + ")");
-	    throw new InvalidEntityException("error in entity description", ex);
-	}
-
-	engine.registerEntityBlueprint(e);
-	return e;
+	// call blueprint init
+	scriptContext.executeFunction("_bp_init");
+	
+	// register with engine
+	engine.registerEntityBlueprint(entity);
+	return entity;
     }
+
+    /*
+     * OLD LOAD HERE based on YML public RuneEntity load(String entityName)
+     * throws RuneScriptException {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).fine("Loading entity = " +
+     * entityName); File entityFile = engine.getGameFile(name, type)
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).fine("file = " +
+     * entityFile.getAbsolutePath());
+     * 
+     * if (!entityFile.exists()) {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).
+     * severe("EntityDefinitionNotFound: " + entityName); throw new
+     * EntityDefinitionNotFoundException(entityName); }
+     * 
+     * YamlReader reader = null; try { reader = new YamlReader(new
+     * FileReader(entityFile)); } catch (FileNotFoundException e) {
+     * Logger.getLogger
+     * (RuneEngine.LOGGER_SUBSYSTEM).severe("EntityDefinitionNotFound: " +
+     * entityName); throw new EntityDefinitionNotFoundException(entityName); }
+     * 
+     * RuneEntity e = null; try {
+     * 
+     * @SuppressWarnings("unchecked") Map<String, String> properties =
+     * (Map<String, String>) reader.read();
+     * 
+     * // inerhit from base entity if given if
+     * (properties.containsKey(RuneEntity.PROP_BASE)) {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer(
+     * "loading base entity = " + properties.get(RuneEntity.PROP_BASE)); e = new
+     * RuneEntity(load(properties.get(RuneEntity.PROP_BASE)), engine); } else {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finer("no base entity"); e
+     * = new RuneEntity(engine); }
+     * 
+     * // set all properties and possibly overwrite base entity for (String prop
+     * : properties.keySet()) {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).finest("loaded property: "
+     * + prop + " = " + properties.get(prop)); e.setProperty(prop,
+     * properties.get(prop)); }
+     * 
+     * // set relevant system properties e.setEngine(engine);
+     * e.setProperty(RuneEntity.PROP_ENTITY, entityName);
+     * 
+     * // check if default script exists
+     * if(!e.hasProperty(RuneEntity.PROP_SCRIPT)) { String scriptPath =
+     * getScriptForEntity(e); File f = new File(engine.basePath() +
+     * File.separator + "script" + File.separator + scriptPath); if(f.exists())
+     * { e.setProperty(RuneEntity.PROP_SCRIPT, scriptPath); } }
+     * 
+     * // load entity script // TODO outsource to script compiler class and do
+     * here only if precompiled scripts option is enabled if
+     * (e.hasProperty(RuneEntity.PROP_SCRIPT) ) { RuneScriptContext scontext =
+     * new RuneScriptContext(e); e.setScriptContext(scontext); // invoke
+     * blueprint init function e.call("_bp_init"); }
+     * 
+     * } catch (ClassCastException ex) {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe(
+     * "InvalidEntity: invalid file format (cause: " + ex.getMessage() + ")");
+     * throw new InvalidEntityException("invalid file format", ex); } catch
+     * (YamlException ex) {
+     * Logger.getLogger(RuneEngine.LOGGER_SUBSYSTEM).severe(
+     * "InvalidEntity: error in entity description (cause: " + ex.getMessage() +
+     * ")"); throw new InvalidEntityException("error in entity description",
+     * ex); }
+     * 
+     * engine.registerEntityBlueprint(e); return e; }
+     */
 
     /**
      * Check if a script exists for the given entity based on its name.
@@ -166,7 +175,7 @@ public class RuneEntityLoader {
 		    entities.add((level != 0 ? f.getName() + "." + s : s));
 		}
 	    } else {
-		if (!f.getName().endsWith(".yml")) {
+		if (!f.getName().endsWith(".lua")) {
 		    continue; // we only care about yml files
 		}
 

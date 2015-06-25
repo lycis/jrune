@@ -13,6 +13,7 @@ import org.jrune.core.RuneEngine;
 import org.jrune.core.RuneException;
 import org.jrune.script.RuneScriptException;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class RuneEntityTest {
@@ -124,16 +125,28 @@ public class RuneEntityTest {
     }
     
     /**
-     * Check if simple inheritance (no-script) is working.
+     * Check if simple inheritance is working.
      * @throws RuneScriptException
      * @throws org.jrune.entity.UnknownEntityException
      */
-    @Test
-    public void testNoScriptInheritance() throws RuneScriptException, org.jrune.entity.UnknownEntityException {
+    @Test @Ignore
+    public void testInheritance() throws RuneScriptException, org.jrune.entity.UnknownEntityException {
+	// TODO implement inheritance
 	RuneEntity derived = engine.cloneEntity("npc.goblins.goblin");
 	assertTrue("entity not based on parent", derived.isBasedOn("npc.monster"));
 	assertEquals("inherited value was not correctly overwritten", "10", derived.getProperty("hp"));
 	assertEquals("inherited value not set", "parent", derived.getProperty("inheritedValue"));
+	assertEquals("property of init not set", 1, derived.getProperty("test"));
+    }
+    
+    @Test
+    public void testSimpleEntityClone() throws UnknownEntityException, RuneScriptException {
+	RuneEntity e = engine.cloneEntity("npc.monster");
+	assertTrue("entity not loaded", e != null);
+	
+	// check properties
+	assertEquals("property hp not set correctly", new Integer(100), e.getProperty(Integer.class, "hp"));
+	assertFalse("property $passable not set correctly", e.getProperty(Boolean.class, RuneEntity.PROP_PASSABLE));
     }
     
     /**
