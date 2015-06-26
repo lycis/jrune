@@ -189,7 +189,12 @@ public class RuneMap {
 	}
 	
 	// entity can not share space with other non-passable entities
-	if(!e.getProperty(Boolean.class, RuneEntity.PROP_PASSABLE) && isOccupied(x, y)) {
+	Boolean passable = e.getProperty(Boolean.class, RuneEntity.PROP_PASSABLE);
+	if(passable == null) {
+	    passable = true;
+	}
+	
+	if(!passable && isOccupied(x, y)) {
 	   return false;
 	}
 	
