@@ -129,14 +129,14 @@ public class RuneEntityTest {
      * @throws RuneScriptException
      * @throws org.jrune.entity.UnknownEntityException
      */
-    @Test @Ignore
+    @Test
     public void testInheritance() throws RuneScriptException, org.jrune.entity.UnknownEntityException {
 	// TODO implement inheritance
 	RuneEntity derived = engine.cloneEntity("npc.goblins.goblin");
 	assertTrue("entity not based on parent", derived.isBasedOn("npc.monster"));
 	assertEquals("inherited value was not correctly overwritten", "10", derived.getProperty("hp"));
 	assertEquals("inherited value not set", "parent", derived.getProperty("inheritedValue"));
-	assertEquals("property of init not set", 1, derived.getProperty("test"));
+	assertEquals("property of init not set", "1", derived.getProperty("test"));
     }
     
     @Test

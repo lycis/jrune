@@ -5,6 +5,7 @@ import java.io.File;
 import org.jrune.core.RuneEngine;
 import org.jrune.entity.RuneEntity;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaDouble;
 import org.luaj.vm2.LuaError;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
@@ -37,28 +38,29 @@ public class RuneScriptContext {
     public RuneScriptContext(RuneEntity entity) throws RuneScriptException {
 	this.entity = entity;
 
+	// set API references
+	luaGlobals = JsePlatform.standardGlobals();
+	luaGlobals.STDOUT = System.out; // TODO change to logger
+	luaGlobals.set("self", CoerceJavaToLua.coerce(entity));
+	luaGlobals.set("inherit", new org.jrune.script.functions.Inherit(this));
+
 	// load and compile script
 	try {
 	    String scriptPath = entity.getProperty(RuneEntity.PROP_SCRIPT);
-	    luaGlobals = JsePlatform.standardGlobals();
 	    LuaValue script = luaGlobals.loadfile(scriptPath).call();
-	    System.out.println(script.tojstring());
 	} catch (LuaError e1) {
 	    throw new RuneScriptException("compiling script of entity " + entity + " failed", e1);
 	}
 
-	// set API references
-	luaGlobals.STDOUT = System.out; // TODO change to logger
-	// TODO do not pass entity directly but wrapped
-	luaGlobals.set("self", CoerceJavaToLua.coerce(entity)); 
     }
 
     /**
      * Invokes a Lua function that is defined in the assigned entity.
      * 
-     * @param function name of the function
-     * @return a LuaValue representing the result of the call or <code>null</code> if the function does not
-     *         exist
+     * @param function
+     *            name of the function
+     * @return a LuaValue representing the result of the call or
+     *         <code>null</code> if the function does not exist
      * @throws RuneScriptException
      */
     public LuaValue executeFunction(String function, Object... args) throws RuneScriptException {
@@ -75,28 +77,37 @@ public class RuneScriptContext {
 	if (!(func instanceof LuaFunction)) {
 	    throw new RuneScriptException(function + " is not a function");
 	}
-	
-	if(args.length < 1) {
+
+	if (args.length < 1) {
 	    return func.call();
 	} else {
-	    
+
 	    // translate arguments into function parameters
 	    LuaValue[] luaArgs = new LuaValue[args.length];
-	    for(int i=0; i< args.length; ++i) {
+	    for (int i = 0; i < args.length; ++i) {
 		luaArgs[i] = CoerceJavaToLua.coerce(args[i]);
 	    }
-	    
+
 	    // execute with parameters
 	    Varargs v = func.invoke(LuaValue.varargsOf(luaArgs));
-	    
+
 	    // return according value
-	    if(v.narg() <= 0) {
+	    if (v.narg() <= 0) {
 		return LuaValue.NIL;
-	    } else if(v.narg() == 1) {
+	    } else if (v.narg() == 1) {
 		return v.arg1();
 	    } else {
 		return new LuaTable(v);
 	    }
 	}
+    }
+
+    /**
+     * Provides the entity bound to this context.
+     * 
+     * @return entity that is managed by this script context
+     */
+    public RuneEntity getEntity() {
+	return entity;
     }
 }

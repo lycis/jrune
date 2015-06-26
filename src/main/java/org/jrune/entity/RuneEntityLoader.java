@@ -53,7 +53,7 @@ public class RuneEntityLoader {
 	RuneScriptContext scriptContext = new RuneScriptContext(entity);
 
 	// call blueprint init
-	scriptContext.executeFunction("_bp_init");
+	scriptContext.executeFunction(RuneEntity.SF_ON_LOAD);
 	
 	// register with engine
 	engine.registerEntityBlueprint(entity);

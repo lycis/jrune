@@ -23,25 +23,29 @@ public class RuneEntity {
 
     // property constants
     /** system property for the uid of the entity **/
-    public static String PROP_UID = "$uid";
+    public static final String PROP_UID = "$uid";
 
     /** system property for the base entity in case of inheritance **/
-    public static String PROP_BASE = "$base";
+    public static final String PROP_BASE = "$base";
 
     /** system property to identify the entity type **/
-    public static String PROP_ENTITY = "$entity";
+    public static final String PROP_ENTITY = "$entity";
 
     /** system property that stores the map and coordinates of the entity **/
-    public static String PROP_LOCATION = "$location";
+    public static final String PROP_LOCATION = "$location";
 
     /** system property that tells if the object occupies space **/
-    public static String PROP_PASSABLE = "$passable";
+    public static final String PROP_PASSABLE = "$passable";
 
     /** system property that specifies actions of the entity **/
-    public static String PROP_ACTIONS = "$actions";
+    public static final String PROP_ACTIONS = "$actions";
 
     /** system property that identifies the associated script file **/
-    public static String PROP_SCRIPT = "$script";
+    public static final String PROP_SCRIPT = "$script";
+    
+    // built-in script functions
+    public static final String SF_ON_LOAD = "_init";
+    public static final String SF_ON_CLONE = "_clone";
 
     // mapping of class type to conversion algorithm
     private static Map<Class<?>, IRunePropertyValueConversion<?>> valueConversionMap = new HashMap<>();
